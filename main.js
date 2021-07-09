@@ -1,150 +1,6 @@
 'use strict';
 
-const stepsAll = ['all' , 'full stops' , 'full and halfs' , 'full and thirds'];
-
-let steps = 0;
-
-const exposureTimesAll = [  // Tutti i possibili tempi di esposizione selezionabili
-                     '1 / 8000 sec',
-                     '1 / 6400 sec',
-                     '1 / 6000 sec',
-                     '1 / 5000 sec',
-
-                     '1 / 4000 sec',
-                     '1 / 3200 sec',
-                     '1 / 3000 sec',
-                     '1 / 2500 sec',
-                     
-                     '1 / 2000 sec',
-                     '1 / 1600 sec',
-                     '1 / 1500 sec',
-                     '1 / 1250 sec', 
-
-                     '1 / 1000 sec',                     
-                     '1 / 800 sec',
-                     '1 / 750 sec',  
-                     '1 / 640 sec', 
-
-                     '1 / 500 sec', 
-                     '1 / 400 sec',
-                     '1 / 350 sec',  
-                     '1 / 320 sec',
-
-                     '1 / 250 sec', 
-                     '1 / 200 sec',
-                     '1 / 180 sec',
-                     '1 / 160 sec',
-
-                     '1 / 125 sec', 
-                     '1 / 100 sec',
-                     '1 / 90 sec',
-                     '1 / 80 sec',
-
-                     '1 / 60 sec', 
-                     '1 / 50 sec',
-                     '1 / 45 sec',
-                     '1 / 40 sec',
-
-                     '1 / 30 sec',
-                     '1 / 25 sec',
-                     '1 / 23 sec',
-                     '1 / 20 sec',
-
-                     '1 / 15 sec',
-                     '1 / 13 sec',
-                     '1 / 11 sec',
-                     '1 / 10 sec',
-
-                     '1 / 8 sec' ,                     
-                     '1 / 6 sec (1/8 + 1/3)',
-                     '1 / 6 sec (1/8 + 1/2)',
-                     '1 / 5 sec',
-
-                     '1 / 4 sec',
-                     '1 / 5 sec',
-                     '0,3 sec ',
-                     '0,4 sec ',
-
-                     '1 / 2 (0,5) sec' ,
-                     '0,6 sec' ,
-                     '0,7 sec' ,
-                     '0,8 sec' ,
-
-                     '1 sec' ,
-                     '1,3 sec',
-                     '1,5 sec',
-                     '1,6 sec',
-
-                     '2 sec' ,
-                     '2,5 sec',
-                     '3 sec',
-                     '3,2 sec',
-
-                     '4 sec' ,
-                     '5 sec (4 + 1/3)',
-                     '5 sec (4 + 1/2)',
-                     '6 sec',
-
-                     '8 sec' ,
-                     '10 sec',
-                     '11 sec',
-                     '13 sec',
-
-                     '15 sec' ,
-                     '20 sec',
-                     '22 sec',
-                     '25 sec',
-
-                     '30 sec' ,
-                     '40 sec',
-                     '45 sec',
-                     '50 sec',
-
-                     '60 sec'
-                    ];
-                    
-const ndFiltersAlll    = [ // Tutti i tipi di Filtri ND supportati
-                            { 
-                                outputName : 'ND 2 - 0.3 (1 Stop)',
-                                stops      : 1
-                            },
-                            { 
-                                outputName : 'ND 4 - 0.6 (2 Stop)',
-                                stops      : 2
-                            },
-                            { 
-                                outputName : 'ND 8 - 0.9 (3 Stop)',
-                                stops      : 3
-                            },
-                            { 
-                                outputName : 'ND 16 - 1.2 (4 Stop)' ,
-                                stops      : 4
-                            },
-                            { 
-                                outputName : 'ND 32 - 1.5 (5 Stop)' ,
-                                stops      : 5
-                            },
-                            { 
-                                outputName : 'ND 64 - 1.8 (6 Stop)' ,
-                                stops      : 6
-                            },
-                            { 
-                                outputName : 'ND 128 - 2.1 (7 Stop)' ,
-                                stops      : 7
-                            },
-                            { 
-                                outputName : 'ND 256 - 2.4 (8 Stop)' ,
-                                stops      : 8
-                            },
-                            { 
-                                outputName : 'ND 512 - 2.7 (9 Stop)' ,
-                                stops      : 9
-                            },
-                            { 
-                                outputName : 'ND 1000/1024 - 3.0 (10 Stop)',
-                                stops      : 10
-                            }
-                        ];
+// const stepsAll = ['all' , 'full stops' , 'full and halfs' , 'full and thirds'];
 
 // Elements
 
@@ -152,103 +8,122 @@ const elTimesList = document.getElementById('exposure-time-initial');
 const elNdFilters = document.getElementById('nd-intensity');
 const elNewTime   = document.getElementById('new-exposure');
 
-let baseExposureIndex;
-let ndStops;
-let newTime;
+let baseExposureIndex, ndStops, newTime;
+
+printTimes();
+printNds();
 
 
-printData();
+// In base alla scelta dell'utente (radio button) determina
+// Quali stop e frazioni di stop mostrare nella select
 
-getBaseExposureTime();
+function setSteps() {
 
-getNdIntensity();
+    let steps = Number(document.querySelector('input[name=steps]:checked').value);
+    console.log(steps);
 
-
-//  Stampa le options corrispondenti a tempi di posa e filtri ND
-function printData() {
-
-    let skip;
-
-    // Tempi di Posa
     switch (steps) {
         case 0:
             // mostra tutto
-            // non si salta niente
             console.log("Mostro tutto");
-            skip = (value) => false;
-            break;
-        case 1:
-            //  mostra solo full stops
-            //  salta le posizioni in cui i % 4 !== 0
-            console.log("Mostro solo Full Stop");
-            skip = (value) => value % 4 !== 0 ? true : false;
-            break;
-        case 2:
-            //  mostra full stops e mezzi stop
-            //  salta le posizioni in cui i % 2 !== 0
-            console.log("Mostro Full Stops e Mezzi Stops");
-            skip = (value) => value % 2 !== 0 ? true : false;
-            break;
-        case 3:
-            //  mostra full stops e terzi di stop
-            //  salta (i + 2) % 4 === 0;
-            console.log("Mostro Full Stops e Terzi di Stops");
-            skip = (value) => ((value + 2) % 4) === 0 ? true : false;
-            //
-            break;
-    
-        default:
-            break;
-    }
+            return (value) => false;
+            case 1:
+                //  Solo full stops
+                console.log("Mostro solo Full Stop");
+                return (value) => value % 4 !== 0 ? true : false;
+                case 2:
+                    //  Solo full stops e mezzi stop
+                    console.log("Mostro Full Stops e Mezzi Stops");
+                    return (value) => value % 2 !== 0 ? true : false;
+                    case 3:
+                        // full stops e terzi di stop
+                        console.log("Mostro Full Stops e Terzi di Stops");                        
+                        return (value) => ((value + 2) % 4) === 0 ? true : false;
+                        default:
+                            return -1;
+                        }
+}
 
+
+// Inserisce nella relativa select i tempi di posa che sarà possibile selezionare
+
+function printTimes(){
+    
+    elTimesList.innerHTML = '';
+
+    let skip = setSteps();
 
     for(let i = 0; i < exposureTimesAll.length; i++){
-        elTimesList.innerHTML += `<option value="${i}">${exposureTimesAll[i]}</option> `;
-        if(skip(i)) console.log("Skippo " + exposureTimesAll[i]);
-        else console.log(exposureTimesAll[i]);
+        console.log(exposureTimesAll[i].label);
+        if(skip(i)) continue
+        else elTimesList.innerHTML += `<option value="${i}">${exposureTimesAll[i].label}</option>`;
     }
+}
 
-    // Filtri ND
+// Stampa nella relativa select tutti i filtri ND supportati dall'applicazione
+
+function printNds(){
     ndFiltersAlll.forEach((element , index) => {
-        elNdFilters.innerHTML += `<option value="${index}">${element.outputName}</option> `;
+        elNdFilters.innerHTML += `<option value="${index}">${element.label}</option> `;
     });
 }
 
-    //  Legge tempo di posa selezionato dall'utente
+//  Legge tempo di posa selezionato dall'utente
+
 function getBaseExposureTime() {
     baseExposureIndex = parseInt(elTimesList.value);
 }
 
 //  Legge filtro ND selezionato dall'utente
+
 function getNdIntensity() {
-    ndStops = parseInt(ndFiltersAlll[elNdFilters.value].stops);
+    ndStops = parseInt(ndFiltersAlll[elNdFilters.value].value);
 }
 
-function getNewExposure() {
 //  Calcola il nuovo tempo di posa
+
+function getNewExposure() {
 
     let indexOffset = ndStops * 4;  // Posizioni (dell'array) che separano il tempo iniziale da quello risultante
 
     if( baseExposureIndex + indexOffset <= exposureTimesAll.length - 1 ) {
         // Se il tempo risultante è fra quelli gestiti dall'array (default: entro i 60") viene restituito l'elemento stesso dell'array
-        newTime = exposureTimesAll[baseExposureIndex + indexOffset];
+        newTime = exposureTimesAll[baseExposureIndex + indexOffset].label;
+        elNewTime.innerHTML = newTime;
+        return;
     }
+
+
+    
+    /************************************************************** */
+    // 
+    // 
+    // 
+    // Altrimenti prendi come riferimento la .value e fai i calcoli con quella
+    // 
+    // 
+    // 
+    /************************************************************** */
+
+
+
     else {
         //  Se il tempo risultante è superiore a quello massimo (60 secondi)
 
         let overflow = (baseExposureIndex + indexOffset) - (exposureTimesAll.length - 1); // overflow è il numero di posizioni che mancano, giunti al termine dell'array, per ottenere il tempo di posa risultante (ogni stop equivale a 4 posizioni)
+        
         let overflowStops = Math.floor(overflow / 4);
         let fractionStops = overflow % 4;
 
         // A questo punto, il tempo risultante sarà uguale a:
         //
-        // exposureTimesAll.length - 1   -->  (tempo max gestito dall'array) +
+        // exposureTimesAll.length - 1   -->  (tempo max gestito dall'array (= 60s)) +
         // overflowStops                 -->  (Stop interi in eccesso) +
         // fractionStops                 -->  (frazioni di stop in eccesso)
 
         console.log("Overflow: "+ overflow + " posizioni \n" + overflowStops + " Stop Interi \n e " + fractionStops + " che rimangono da gestire" );
         
-        newTime = parseInt(exposureTimesAll[exposureTimesAll.length - 1]);    // = 60
+        newTime = parseInt(exposureTimesAll[exposureTimesAll.length - 1].label);    // = 60
 
         for (let i = 0; i < overflowStops; i++) {
             newTime *= 2;
@@ -269,39 +144,68 @@ function getNewExposure() {
             default:
                 //  No fractions
                 break;
-        }
-        
-    }
-    
-    if(newTime >= 60) {
-        newTime = stringFromTime( Math.ceil(newTime) );
+        }        
     }
 
-    elNewTime.innerHTML = newTime;
+    newTime = Math.ceil(newTime);   // arrotonda
+
+    elNewTime.innerHTML = timeString(formatTime(newTime));
+    runCountdown(newTime);
+    return;
 
 }
 
-function stringFromTime(timeSeconds) {
-    // Trasforma il tempo di posa grezzo (in secondi) in una stringa pronta da stampare
-    // Convertendolo, eventualmente in ore : minuti : secondi
+// Passato come argomento il tempo di posa in secondi, restituisce un array che
+// indica il tempo nel formato [secondi , minuti , ore]
 
-    var timeString = '';
+function formatTime(time) {
 
-    if(timeSeconds >= 60){
+    let timeSeconds = 0;
+    let timeMinutes = 0;
+    let timeHours   = 0;
 
-        var timeMinutes = Math.floor(timeSeconds / 60);
+    timeSeconds = time;
+
+    if (timeSeconds >= 60) {
+        timeMinutes = Math.floor(timeSeconds / 60);
         timeSeconds = timeSeconds % 60;
-        
-        if(timeMinutes >= 60){
-            var timeHours = Math.floor(timeMinutes / 60);
-            timeMinutes = (timeMinutes % 60);
-            timeString += timeHours.toString() + ' h ';
+
+        if (timeMinutes > 60) {
+            timeHours = Math.floor(timeMinutes / 60);
+            timeMinutes = timeMinutes % 60;
         }
-
-        timeString += timeMinutes.toString() + ' min ';
-
     }
+    return [timeSeconds , timeMinutes , timeHours];
+}
 
-    return timeString += timeSeconds.toString() + ' sec';
+// Restituisce una stringa indicante il tempo di posa nel formato "X h X min X sec"
+
+function timeString(time) {
+    
+    let timeString  = '';
+
+    if ((time.length > 2) && time[2] )
+        timeString += time[2] + ' h ';
+    
+    if ((time.length > 1) && time[1] )
+        timeString += time[1] + ' min ';
+
+    if (time[0])
+        timeString += time[0] + ' sec';
+
+    return timeString;
+}
+
+function runCountdown(time){
+    
+    const elCountdown = document.querySelector('#countdown');
+
+    const timer = setInterval(() => {
+        if (time === 0) {
+            clearInterval(timer);
+            elCountdown.innerHTML = 'Exposure Completed';
+        } else
+            elCountdown.innerHTML = timeString(formatTime(time--));        
+    }, 100);
 
 }

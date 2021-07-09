@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: cornflowerblue;
+    color: white;
+}
+
+.container {
+    min-height: 100vh;
+    max-width: 800px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
+    flex-wrap: wrap;    
+
+}
+
+.container > * {
+    flex: 0 0 calc(100% / 3 - 40px );
+}
+
+
+button {
+    height: 30px;
+    padding: 0 20px;
+    background-color: white;
+}
+
+select ,
+select option {
+    padding-left: 10px;
+    height: 30px;
+    
+}
+
+.container h2 {
+    flex-basis: 100%;
+    text-align: center;
+    margin-top: 50px;
+    font-size: 50px;
+    letter-spacing: 5px;
+}

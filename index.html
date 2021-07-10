@@ -15,14 +15,11 @@
 
             <div class="radio-outer">
 
-                <input onchange="printTimes()" id="steps-1" type="radio" name="steps" value="1" checked>
-                <label for="steps-1">Full Stops Only</label>
+            <!-- 
+                Steps select
+                Populated by JS
+             -->
 
-                <input onchange="printTimes()" id="steps-2" type="radio" name="steps" value="2">
-                <label for="steps-2">Full Stops and Halfs</label>
-
-                <input onchange="printTimes()" id="steps-3" type="radio" name="steps" value="3">
-                <label for="steps-3">Full Stops and Thirds</label>
             </div>
 
             <select onchange="getBaseExposureTime()" name="exposure-time-initial" id="exposure-time-initial">
@@ -40,10 +37,18 @@
 
         </select>
 
-        <button onclick="getNewExposure()">Calcola</button>
+        <button class="btn--get-exposure" onclick="getNewExposure()">Calcola</button>
 
         <h2 id="new-exposure"> </h2>
+        <button class="btn--countdown" onclick="runCountdown()">Start Countdown</button>
+        
+        <button class="btn--clear-countdown" onclick="stopCountdown()">Stop Countdown</button>
+        
         <h2 id="countdown"> </h2>
+
+        <button class="btn--reset-all" onclick="resetAll()">Reset All</button>
+
+
     </div>
     <script src="data.js"></script>
     <script src="main.js"></script>

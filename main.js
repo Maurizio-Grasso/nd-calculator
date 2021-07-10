@@ -1,18 +1,47 @@
 'use strict';
 
-// const stepsAll = ['all' , 'full stops' , 'full and halfs' , 'full and thirds'];
+const stepsAll = ['all' , 'full stops' , 'full and halfs' , 'full and thirds'];
 
 // Elements
 
-const elTimesList = document.getElementById('exposure-time-initial');
-const elNdFilters = document.getElementById('nd-intensity');
-const elNewTime   = document.getElementById('new-exposure');
+const elTimesList   = document.getElementById('exposure-time-initial');
+const elNdFilters   = document.getElementById('nd-intensity');
+const elNewTime     = document.getElementById('new-exposure');
+const elCountdown   = document.getElementById('countdown');
+const elRadioSteps  = document.querySelector('.radio-outer');
+const elNewExp      = document.querySelector('.btn--get-exposure');
 
-let baseExposureIndex, ndStops, newTime;
+let baseExposureIndex, ndStops, newTime, timer;
 
-printTimes();
-printNds();
+init();
 
+function init() {
+    printRadioValues();
+    printTimes();
+    printNds();
+
+    baseExposureIndex = 0;              // Primo elemento dell'array (default: 1/8000)
+    ndStops = ndFiltersAlll[0].value;   // = 1
+}
+
+function resetAll() {
+    stopCountdown();
+    init();
+    toggleControls(false);
+}
+
+function toggleControls(bool) {
+    console.log("bool = " + bool);
+    elTimesList.disabled = bool;
+    elNdFilters.disabled = bool;
+    elNewExp.disabled    = bool;
+
+    const radioSteps = document.querySelectorAll('input[name=steps]');
+
+    radioSteps.forEach(el => {
+        el.disabled = bool;
+    });
+}
 
 // In base alla scelta dell'utente (radio button) determina
 // Quali stop e frazioni di stop mostrare nella select
@@ -20,24 +49,19 @@ printNds();
 function setSteps() {
 
     let steps = Number(document.querySelector('input[name=steps]:checked').value);
-    console.log(steps);
 
     switch (steps) {
         case 0:
             // mostra tutto
-            console.log("Mostro tutto");
             return (value) => false;
             case 1:
                 //  Solo full stops
-                console.log("Mostro solo Full Stop");
                 return (value) => value % 4 !== 0 ? true : false;
                 case 2:
                     //  Solo full stops e mezzi stop
-                    console.log("Mostro Full Stops e Mezzi Stops");
                     return (value) => value % 2 !== 0 ? true : false;
                     case 3:
                         // full stops e terzi di stop
-                        console.log("Mostro Full Stops e Terzi di Stops");                        
                         return (value) => ((value + 2) % 4) === 0 ? true : false;
                         default:
                             return -1;
@@ -54,7 +78,6 @@ function printTimes(){
     let skip = setSteps();
 
     for(let i = 0; i < exposureTimesAll.length; i++){
-        console.log(exposureTimesAll[i].label);
         if(skip(i)) continue
         else elTimesList.innerHTML += `<option value="${i}">${exposureTimesAll[i].label}</option>`;
     }
@@ -63,10 +86,30 @@ function printTimes(){
 // Stampa nella relativa select tutti i filtri ND supportati dall'applicazione
 
 function printNds(){
+    elNdFilters.innerHTML = '';
     ndFiltersAlll.forEach((element , index) => {
         elNdFilters.innerHTML += `<option value="${index}">${element.label}</option> `;
     });
 }
+
+function printRadioValues() {
+
+    elRadioSteps.innerHTML = '';
+
+    for (let i = 0; i < stepsAll.length ; i++) {
+
+        elRadioSteps.innerHTML += `<div>`;
+        
+        elRadioSteps.innerHTML += `<input onchange="printTimes()" id="steps-${i}" type="radio" name="steps" value="${i}">`;
+        elRadioSteps.innerHTML += `<label for="steps-${i}">${stepsAll[i]}</label>`;
+        
+        elRadioSteps.innerHTML += `</div>`;
+        
+    }
+
+    document.getElementById('steps-1').checked = true;
+
+} 
 
 //  Legge tempo di posa selezionato dall'utente
 
@@ -80,7 +123,6 @@ function getNdIntensity() {
     ndStops = parseInt(ndFiltersAlll[elNdFilters.value].value);
 }
 
-
 //  Calcola il nuovo tempo di posa
 
 function getNewExposure() {
@@ -92,7 +134,7 @@ function getNewExposure() {
     
     if( baseExposureIndex + indexOffset <= exposureTimesAll.length - 1 ) {
         newTime = exposureTimesAll[baseExposureIndex + indexOffset].label;
-        // elNewTime.innerHTML = newTime;
+        elNewTime.innerHTML = newTime;
     }
 
     // Se il tempo risultante NON è fra quelli gestiti dall'array viene effettuato il calcolo
@@ -104,11 +146,9 @@ function getNewExposure() {
         for (let i = 0; i < ndStops; i++) newTime *= 2;   // raddippio ad ogni stop
 
         newTime = Math.ceil(newTime);   // arrotonda
-    }
 
-    elNewTime.innerHTML = timeString(formatTime(newTime));
-    
-    if (newTime > 10) runCountdown(newTime);    // debug only
+        elNewTime.innerHTML = timeString(formatTime(newTime));
+    }
 
 }
 
@@ -144,25 +184,39 @@ function timeString(time) {
     if ((time.length > 2) && time[2] )
         timeString += time[2] + ' h ';
     
-    if ((time.length > 1) && time[1] )
+    if ((time.length > 1) && (time[1] || time[2]) )
         timeString += time[1] + ' min ';
 
-    if (time[0])
         timeString += time[0] + ' sec';
 
     return timeString;
 }
 
-function runCountdown(time){
-    
-    const elCountdown = document.querySelector('#countdown');
 
-    const timer = setInterval(() => {
+function runCountdown() {
+
+    if (typeof newTime !== 'number') return;
+    if (timer) return;
+
+    console.log("sono nel countdown");
+
+    toggleControls(true);
+
+    let time = newTime;
+
+    timer = setInterval(() => {
         if (time === 0) {
             clearInterval(timer);
-            elCountdown.innerHTML = 'Exposure Completed';
+            elCountdown.textContent = 'Exposure Completed';
+            toggleControls(false);
+            timer = null;
         } else
-            elCountdown.innerHTML = timeString(formatTime(time--));        
-    }, 100);
+            elCountdown.textContent = timeString(formatTime(time--));        
+    }, 10);    // debug only (replace with 1000)
+}
 
+function stopCountdown() {
+    if (timer) clearInterval(timer);
+    timer = null;
+    elCountdown.textContent = '';
 }

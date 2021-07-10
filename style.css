@@ -48,5 +48,9 @@ select option {
 }
 
 .radio-outer label {
-    display: block;
+    /* display: block; */
+}
+
+.hidden {
+    display: none;
 }

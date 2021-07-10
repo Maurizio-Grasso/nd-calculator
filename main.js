@@ -80,78 +80,35 @@ function getNdIntensity() {
     ndStops = parseInt(ndFiltersAlll[elNdFilters.value].value);
 }
 
+
 //  Calcola il nuovo tempo di posa
 
 function getNewExposure() {
 
-    let indexOffset = ndStops * 4;  // Posizioni (dell'array) che separano il tempo iniziale da quello risultante
+    // Posizioni (dell'array) che separano il tempo iniziale da quello risultante
+    let indexOffset = ndStops * 4;
 
-    if( baseExposureIndex + indexOffset <= exposureTimesAll.length - 1 ) {
-        // Se il tempo risultante è fra quelli gestiti dall'array (default: entro i 60") viene restituito l'elemento stesso dell'array
-        newTime = exposureTimesAll[baseExposureIndex + indexOffset].label;
-        elNewTime.innerHTML = newTime;
-        return;
-    }
-
-
+    // Se il tempo risultante è fra quelli gestiti dall'array viene restituito l'elemento stesso dell'array
     
-    /************************************************************** */
-    // 
-    // 
-    // 
-    // Altrimenti prendi come riferimento la .value e fai i calcoli con quella
-    // 
-    // 
-    // 
-    /************************************************************** */
-
-
-
-    else {
-        //  Se il tempo risultante è superiore a quello massimo (60 secondi)
-
-        let overflow = (baseExposureIndex + indexOffset) - (exposureTimesAll.length - 1); // overflow è il numero di posizioni che mancano, giunti al termine dell'array, per ottenere il tempo di posa risultante (ogni stop equivale a 4 posizioni)
-        
-        let overflowStops = Math.floor(overflow / 4);
-        let fractionStops = overflow % 4;
-
-        // A questo punto, il tempo risultante sarà uguale a:
-        //
-        // exposureTimesAll.length - 1   -->  (tempo max gestito dall'array (= 60s)) +
-        // overflowStops                 -->  (Stop interi in eccesso) +
-        // fractionStops                 -->  (frazioni di stop in eccesso)
-
-        console.log("Overflow: "+ overflow + " posizioni \n" + overflowStops + " Stop Interi \n e " + fractionStops + " che rimangono da gestire" );
-        
-        newTime = parseInt(exposureTimesAll[exposureTimesAll.length - 1].label);    // = 60
-
-        for (let i = 0; i < overflowStops; i++) {
-            newTime *= 2;
-        }
-
-        switch (fractionStops) {
-            case 1:
-                newTime *= (1 + (1/3));                
-                break;
-            case 2:
-                newTime *= 1.5;
-            
-                break;
-            case 3:
-                newTime *= (1 + (2/3));
-                break;
-        
-            default:
-                //  No fractions
-                break;
-        }        
+    if( baseExposureIndex + indexOffset <= exposureTimesAll.length - 1 ) {
+        newTime = exposureTimesAll[baseExposureIndex + indexOffset].label;
+        // elNewTime.innerHTML = newTime;
     }
 
-    newTime = Math.ceil(newTime);   // arrotonda
+    // Se il tempo risultante NON è fra quelli gestiti dall'array viene effettuato il calcolo
+    
+    else if ( baseExposureIndex + indexOffset > exposureTimesAll.length - 1 ) {
+
+        newTime = exposureTimesAll[baseExposureIndex].value;
+        
+        for (let i = 0; i < ndStops; i++) newTime *= 2;   // raddippio ad ogni stop
+
+        newTime = Math.ceil(newTime);   // arrotonda
+    }
 
     elNewTime.innerHTML = timeString(formatTime(newTime));
-    runCountdown(newTime);
-    return;
+    
+    if (newTime > 10) runCountdown(newTime);    // debug only
 
 }
 

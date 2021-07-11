@@ -11,18 +11,29 @@ body {
 
 .container {
     min-height: 100vh;
-    max-width: 800px;
+    max-width: 1024px;
+
     margin: auto;
+
     display: flex;
+    justify-content: space-between;
     align-items: center;
     align-content: center;
-    justify-content: space-between;
     flex-wrap: wrap;    
-
 }
 
 .container > * {
     flex: 0 0 calc(100% / 3 - 40px );
+}
+
+.row {
+    flex: 0 0 100%;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
 }
 
 
@@ -42,7 +53,7 @@ select option {
 .container h2 {
     flex-basis: 100%;
     text-align: center;
-    margin-top: 50px;
+    /* margin-top: 50px; */
     font-size: 50px;
     letter-spacing: 5px;
 }
@@ -52,5 +63,5 @@ select option {
 }
 
 .hidden {
-    display: none;
+    visibility: hidden;
 }

@@ -1,52 +1,59 @@
 'use strict';
 
-const stepsAll = ['all' , 'full stops' , 'full and halfs' , 'full and thirds'];
-
 // Elements
 
-const elTimesList   = document.getElementById('exposure-time-initial');
-const elNdFilters   = document.getElementById('nd-intensity');
-const elNewTime     = document.getElementById('new-exposure');
-const elCountdown   = document.getElementById('countdown');
-const elRadioSteps  = document.querySelector('.radio-outer');
-const elNewExp      = document.querySelector('.btn--get-exposure');
+const elTimesList      = document.getElementById('exposure-time-initial');
+const elNdFilters      = document.getElementById('nd-intensity');
+const elNewTime        = document.getElementById('new-exposure');
+const elCountdown      = document.getElementById('countdown');
+const elRadioSteps     = document.querySelector('.radio-outer');
+const elNewExp         = document.querySelector('.btn--get-exposure');
+const elCountdownBox   = document.querySelector('.countdown-box');
+const elCountdownAbort = document.querySelector('.btn--clear-countdown');
+const elCountdownRun   = document.querySelector('.btn--countdown');
+const elResetAll       = document.querySelector('.btn--reset-all');
 
 let baseExposureIndex, ndStops, newTime, timer;
 
-init();
-
-function init() {
-    printRadioValues();
-    printTimes();
-    printNds();
-
-    baseExposureIndex = 0;              // Primo elemento dell'array (default: 1/8000)
-    ndStops = ndFiltersAlll[0].value;   // = 1
-}
+printRadioValues();
+printTimes();
+printNds();
 
 function resetAll() {
+
     stopCountdown();
-    init();
     toggleControls(false);
+    hideCountdownBox();
+}
+
+function showCountdownBox(){
+    elCountdownBox.classList.remove('hidden');
+    elCountdown.textContent = '';
+}
+
+function hideCountdownBox(){
+    elCountdownBox.classList.add('hidden');
 }
 
 function toggleControls(bool) {
-    console.log("bool = " + bool);
+    
     elTimesList.disabled = bool;
     elNdFilters.disabled = bool;
     elNewExp.disabled    = bool;
+    elCountdownRun.disabled = bool;
+    elCountdownAbort.disabled = bool ? false : true;
 
-    const radioSteps = document.querySelectorAll('input[name=steps]');
+    const radioStepsAll = document.querySelectorAll('input[name=steps]');
 
-    radioSteps.forEach(el => {
+    radioStepsAll.forEach(el => {
         el.disabled = bool;
     });
 }
 
-// In base alla scelta dell'utente (radio button) determina
-// Quali stop e frazioni di stop mostrare nella select
 
 function setSteps() {
+    // In base alla scelta dell'utente (radio button) determina
+    // Quali stop e frazioni di stop mostrare nella select
 
     let steps = Number(document.querySelector('input[name=steps]:checked').value);
 
@@ -68,12 +75,10 @@ function setSteps() {
                         }
 }
 
-
-// Inserisce nella relativa select i tempi di posa che sarà possibile selezionare
-
-function printTimes(){
+function printTimes(){    
+    // Inserisce nella relativa select i tempi di posa che sarà possibile selezionare
     
-    elTimesList.innerHTML = '';
+    elTimesList.innerHTML = `<option value="-1"></option>`;
 
     let skip = setSteps();
 
@@ -81,15 +86,22 @@ function printTimes(){
         if(skip(i)) continue
         else elTimesList.innerHTML += `<option value="${i}">${exposureTimesAll[i].label}</option>`;
     }
+
+    baseExposureIndex = -1; // default
+
 }
 
-// Stampa nella relativa select tutti i filtri ND supportati dall'applicazione
-
 function printNds(){
-    elNdFilters.innerHTML = '';
+    // Stampa nella relativa select tutti i filtri ND supportati dall'applicazione
+
+    elNdFilters.innerHTML = `<option value="-1"></option> `;
+
     ndFiltersAlll.forEach((element , index) => {
         elNdFilters.innerHTML += `<option value="${index}">${element.label}</option> `;
     });
+
+    ndStops = -1;   // default
+
 }
 
 function printRadioValues() {
@@ -107,37 +119,46 @@ function printRadioValues() {
         
     }
 
-    document.getElementById('steps-1').checked = true;
+    document.getElementById('steps-1').checked = true;  // di default viene selezionata opzione 1 (full stops)
 
 } 
 
-//  Legge tempo di posa selezionato dall'utente
-
-function getBaseExposureTime() {
-    baseExposureIndex = parseInt(elTimesList.value);
-}
-
-//  Legge filtro ND selezionato dall'utente
-
-function getNdIntensity() {
-    ndStops = parseInt(ndFiltersAlll[elNdFilters.value].value);
-}
-
-//  Calcola il nuovo tempo di posa
-
 function getNewExposure() {
+    //  Calcola il nuovo tempo di posa
 
-    // Posizioni (dell'array) che separano il tempo iniziale da quello risultante
-    let indexOffset = ndStops * 4;
-
-    // Se il tempo risultante è fra quelli gestiti dall'array viene restituito l'elemento stesso dell'array
-    
-    if( baseExposureIndex + indexOffset <= exposureTimesAll.length - 1 ) {
-        newTime = exposureTimesAll[baseExposureIndex + indexOffset].label;
-        elNewTime.innerHTML = newTime;
+    // parametri necessari non selezionati
+    if(Number(elTimesList.value) === -1 || Number(elNdFilters.value) === -1){
+        elNewTime.textContent = "Please, select both base Exposure Time and ND Filter"
+        return;
     }
 
-    // Se il tempo risultante NON è fra quelli gestiti dall'array viene effettuato il calcolo
+    // Parametri non modificati rispetto al calcolo precedente
+    if( baseExposureIndex === Number(elTimesList.value) &&  ndStops === Number(ndFiltersAlll[elNdFilters.value].value) ) {
+        console.log("Stai cercando di eseguire la stessa ricerca. Non proseguirò");
+        return;
+    }
+        
+    console.log("Sto Calcolando nuovo tempo di posa");  // debug
+
+    baseExposureIndex = parseInt(elTimesList.value);
+    ndStops = parseInt(ndFiltersAlll[elNdFilters.value].value);
+
+    hideCountdownBox();
+
+    let indexOffset = ndStops * 4;  // Posizioni (dell'array) che separano il tempo iniziale da quello risultante
+
+    //  Se il tempo risultante È fra quelli gestiti dall'array 
+    //  viene stampato l'elemento stesso dell'array
+    
+    if( baseExposureIndex + indexOffset <= exposureTimesAll.length - 1 ) {
+
+        elNewTime.textContent = exposureTimesAll[baseExposureIndex + indexOffset].label;
+        newTime = exposureTimesAll[baseExposureIndex + indexOffset].value;
+
+    }
+    
+    //  Se il tempo risultante NON è fra quelli gestiti dall'array
+    //  viene effettuato il calcolo tramite ciclo for
     
     else if ( baseExposureIndex + indexOffset > exposureTimesAll.length - 1 ) {
 
@@ -150,12 +171,14 @@ function getNewExposure() {
         elNewTime.innerHTML = timeString(formatTime(newTime));
     }
 
+    if (newTime >= 5) showCountdownBox(); //  Per tempi di almeno 5 secondi mostra box countdown
+
 }
 
-// Passato come argomento il tempo di posa in secondi, restituisce un array che
-// indica il tempo nel formato [secondi , minuti , ore]
 
 function formatTime(time) {
+    // Passato come argomento il tempo di posa in secondi, restituisce un array che
+    // indica il tempo nel formato [secondi , minuti , ore]
 
     let timeSeconds = 0;
     let timeMinutes = 0;
@@ -175,9 +198,9 @@ function formatTime(time) {
     return [timeSeconds , timeMinutes , timeHours];
 }
 
-// Restituisce una stringa indicante il tempo di posa nel formato "X h X min X sec"
 
 function timeString(time) {
+    // Restituisce una stringa indicante il tempo di posa nel formato "X h X min X sec"
     
     let timeString  = '';
 
@@ -194,12 +217,12 @@ function timeString(time) {
 
 
 function runCountdown() {
+    //  Avvia countDown
 
     if (typeof newTime !== 'number') return;
     if (timer) return;
 
     console.log("sono nel countdown");
-
     toggleControls(true);
 
     let time = newTime;
@@ -212,11 +235,14 @@ function runCountdown() {
             timer = null;
         } else
             elCountdown.textContent = timeString(formatTime(time--));        
-    }, 10);    // debug only (replace with 1000)
+    }, 50);    // debug only (replace with 1000)
 }
 
 function stopCountdown() {
+    // Interrompe CountDown
+    toggleControls(false);
+
     if (timer) clearInterval(timer);
     timer = null;
-    elCountdown.textContent = '';
+    elCountdown.textContent = 'Timer Stopper';
 }

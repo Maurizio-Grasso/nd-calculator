@@ -433,3 +433,10 @@ const ndFiltersAlll = [
         value      : 10
     }
 ];
+
+const stepsAll = [
+    'all' , 
+    'full stops' , 
+    'full and halfs' , 
+    'full and thirds'
+];

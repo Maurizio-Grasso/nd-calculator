@@ -11,46 +11,59 @@
 
     <div class="container">
 
-        <div>
+        <div class="row">
 
-            <div class="radio-outer">
+            <div>
 
-            <!-- 
-                Steps select
-                Populated by JS
-             -->
+                
+                <select  name="exposure-time-initial" id="exposure-time-initial">
+                    
+                    <!-- Base Exposure Time 
+                        Populated by JS    -->
+                        
+                </select>
+
+                <div class="radio-outer">
+
+                <!-- 
+                    Steps select
+                    Populated by JS
+                    -->
+
+                </div>
 
             </div>
 
-            <select onchange="getBaseExposureTime()" name="exposure-time-initial" id="exposure-time-initial">
-                
-            <!-- Base Exposure Time 
-                Populated by JS    -->
-                
+            <select name="nd-intensity" id="nd-intensity">
+
+                    <!-- ND Filters List 
+                    Populated by JS    -->
+
             </select>
+
+            <button class="btn--get-exposure" onclick="getNewExposure()">Calcola</button>
+        
         </div>
 
-        <select onchange="getNdIntensity()" name="nd-intensity" id="nd-intensity">
+        <div class="row">
+            <h2 id="new-exposure"> </h2>
+        </div>
 
-                <!-- ND Filters List 
-                Populated by JS    -->
+        <div class="row countdown-box hidden">
+            <button class="btn--countdown" onclick="runCountdown()">Start Countdown</button>
+            
+            <button class="btn--clear-countdown" onclick="stopCountdown()" disabled >Stop Countdown</button>
+            
+            <span id="countdown"> </span>
+            <button class="btn--reset-all" onclick="resetAll()">Reset All</button>
 
-        </select>
+        </div>
 
-        <button class="btn--get-exposure" onclick="getNewExposure()">Calcola</button>
-
-        <h2 id="new-exposure"> </h2>
-        <button class="btn--countdown" onclick="runCountdown()">Start Countdown</button>
-        
-        <button class="btn--clear-countdown" onclick="stopCountdown()">Stop Countdown</button>
-        
-        <h2 id="countdown"> </h2>
-
-        <button class="btn--reset-all" onclick="resetAll()">Reset All</button>
 
 
     </div>
     <script src="data.js"></script>
     <script src="main.js"></script>
+
 </body>
 </html>

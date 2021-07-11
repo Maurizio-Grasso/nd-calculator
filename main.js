@@ -5,13 +5,15 @@
 const elTimesList      = document.getElementById('exposure-time-initial');
 const elNdFilters      = document.getElementById('nd-intensity');
 const elNewTime        = document.getElementById('new-exposure');
-const elCountdown      = document.getElementById('countdown');
 const elRadioSteps     = document.querySelector('.radio-outer');
 const elNewExp         = document.querySelector('.btn--get-exposure');
+const elResetAll       = document.querySelector('.btn--reset-all');
+
+const elCountdown      = document.getElementById('countdown');
 const elCountdownBox   = document.querySelector('.countdown-box');
 const elCountdownAbort = document.querySelector('.btn--clear-countdown');
 const elCountdownRun   = document.querySelector('.btn--countdown');
-const elResetAll       = document.querySelector('.btn--reset-all');
+const elCountdownBar   = document.querySelector('.countdown-bar');
 
 let baseExposureIndex, ndStops, newTime, timer;
 
@@ -246,3 +248,24 @@ function stopCountdown() {
     timer = null;
     elCountdown.textContent = 'Timer Stopper';
 }
+
+let fillBar;
+
+fillCountdownBar();
+
+function fillCountdownBar(){
+    
+    let debugTime = 57;    // tempo di prova
+    
+    let actualProgress=0;
+
+    let amountPerSecond = 100 / debugTime;
+
+    
+    fillBar = setInterval(() => {
+        actualProgress += amountPerSecond;
+        elCountdownBar.style.backgroundImage=`linear-gradient(to right , red ${actualProgress}%, gray ${actualProgress}%`;
+    }, 1000);
+}
+
+

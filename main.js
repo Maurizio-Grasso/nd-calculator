@@ -13,6 +13,7 @@ const elCountdown      = document.getElementById('countdown');
 const elCountdownBox   = document.querySelector('.countdown-box');
 const elCountdownAbort = document.querySelector('.btn--clear-countdown');
 const elCountdownRun   = document.querySelector('.btn--countdown');
+
 const elCountdownBar   = document.querySelector('.countdown-bar');
 
 let baseExposureIndex, ndStops, newTime, timer;
@@ -29,11 +30,13 @@ function resetAll() {
 }
 
 function showCountdownBox(){
+    if (newTime < 5) return;
     elCountdownBox.classList.remove('hidden');
     elCountdown.textContent = '';
 }
 
 function hideCountdownBox(){
+    resetCountdownBar();
     elCountdownBox.classList.add('hidden');
 }
 
@@ -51,7 +54,6 @@ function toggleControls(bool) {
         el.disabled = bool;
     });
 }
-
 
 function setSteps() {
     // In base alla scelta dell'utente (radio button) determina
@@ -77,6 +79,25 @@ function setSteps() {
                         }
 }
 
+function printRadioValues() {
+    console.log(baseExposureIndex);
+    elRadioSteps.innerHTML = '';
+
+    for (let i = 0; i < stepsAll.length ; i++) {
+
+        if (i == 0) continue;   // salta elemento 0 (show all utile solo per debug)
+
+        elRadioSteps.innerHTML += `<div>`;
+        elRadioSteps.innerHTML += `<input onchange="printTimes()" id="steps-${i}" type="radio" name="steps" value="${i}">`;
+        elRadioSteps.innerHTML += `<label for="steps-${i}">${stepsAll[i]}</label>`;        
+        elRadioSteps.innerHTML += `</div>`;
+        
+    }
+
+        document.getElementById('steps-1').checked = true;  // di default viene selezionata opzione 1 (full stops)
+    
+}
+
 function printTimes(){    
     // Inserisce nella relativa select i tempi di posa che sarà possibile selezionare
     
@@ -89,8 +110,10 @@ function printTimes(){
         else elTimesList.innerHTML += `<option value="${i}">${exposureTimesAll[i].label}</option>`;
     }
 
-    baseExposureIndex = -1; // default
+    if(!baseExposureIndex) baseExposureIndex = -1; // default
 
+    elTimesList.value = baseExposureIndex;  // preserva eventuale valore precedentemente selezionato dopo la ristampa dei tempi
+    
 }
 
 function printNds(){
@@ -106,46 +129,30 @@ function printNds(){
 
 }
 
-function printRadioValues() {
-
-    elRadioSteps.innerHTML = '';
-
-    for (let i = 0; i < stepsAll.length ; i++) {
-
-        elRadioSteps.innerHTML += `<div>`;
-        
-        elRadioSteps.innerHTML += `<input onchange="printTimes()" id="steps-${i}" type="radio" name="steps" value="${i}">`;
-        elRadioSteps.innerHTML += `<label for="steps-${i}">${stepsAll[i]}</label>`;
-        
-        elRadioSteps.innerHTML += `</div>`;
-        
-    }
-
-    document.getElementById('steps-1').checked = true;  // di default viene selezionata opzione 1 (full stops)
-
-} 
-
 function getNewExposure() {
     //  Calcola il nuovo tempo di posa
 
-    // parametri necessari non selezionati
+    // Eccezione: parametri necessari non selezionati
     if(Number(elTimesList.value) === -1 || Number(elNdFilters.value) === -1){
         elNewTime.textContent = "Please, select both base Exposure Time and ND Filter"
         return;
     }
 
-    // Parametri non modificati rispetto al calcolo precedente
+    // Eccezione:  parametri non modificati rispetto al calcolo precedente
     if( baseExposureIndex === Number(elTimesList.value) &&  ndStops === Number(ndFiltersAlll[elNdFilters.value].value) ) {
         console.log("Stai cercando di eseguire la stessa ricerca. Non proseguirò");
+        showCountdownBox(); // Mostra comunque pannello countdown
+
         return;
     }
         
-    console.log("Sto Calcolando nuovo tempo di posa");  // debug
+    hideCountdownBox();
+
+    console.log("Sto Calcolando nuovo tempo di posa");
 
     baseExposureIndex = parseInt(elTimesList.value);
     ndStops = parseInt(ndFiltersAlll[elNdFilters.value].value);
 
-    hideCountdownBox();
 
     let indexOffset = ndStops * 4;  // Posizioni (dell'array) che separano il tempo iniziale da quello risultante
 
@@ -170,53 +177,40 @@ function getNewExposure() {
 
         newTime = Math.ceil(newTime);   // arrotonda
 
-        elNewTime.innerHTML = timeString(formatTime(newTime));
+        elNewTime.innerHTML = timeString(newTime);
     }
 
-    if (newTime >= 5) showCountdownBox(); //  Per tempi di almeno 5 secondi mostra box countdown
+    showCountdownBox();
 
 }
 
+function formatTime(timeSeconds) {
 
-function formatTime(time) {
-    // Passato come argomento il tempo di posa in secondi, restituisce un array che
-    // indica il tempo nel formato [secondi , minuti , ore]
+    // Passato come parametro il tempo di posa in secondi, restituisce un oggetto
+    // indica il tempo nel formato secondi , minuti , ore
 
-    let timeSeconds = 0;
-    let timeMinutes = 0;
-    let timeHours   = 0;
+    const timeObj = {timeSeconds : timeSeconds};
 
-    timeSeconds = time;
+    if (timeObj.timeSeconds >= 60) {
+        timeObj.timeMinutes = Math.floor(timeObj.timeSeconds / 60);
+        timeObj.timeSeconds = timeObj.timeSeconds % 60;
 
-    if (timeSeconds >= 60) {
-        timeMinutes = Math.floor(timeSeconds / 60);
-        timeSeconds = timeSeconds % 60;
-
-        if (timeMinutes > 60) {
-            timeHours = Math.floor(timeMinutes / 60);
-            timeMinutes = timeMinutes % 60;
+        if (timeObj.timeMinutes > 60) {
+            timeObj.timeHours = Math.floor(timeObj.timeMinutes / 60);
+            timeObj.timeMinutes = timeObj.timeMinutes % 60;
         }
     }
-    return [timeSeconds , timeMinutes , timeHours];
-}
 
+    return timeObj;
+}
 
 function timeString(time) {
-    // Restituisce una stringa indicante il tempo di posa nel formato "X h X min X sec"
+    // Compone una stringa che indica il tempo di posa nel formato " h : min : sec "
     
-    let timeString  = '';
+    time = formatTime(time);
+    return `${(time.timeHours) ? time.timeHours +' h ' : ''}${(time.timeHours || time.timeMinutes) ? time.timeMinutes + ' min ' : ''}${time.timeSeconds} sec`;
 
-    if ((time.length > 2) && time[2] )
-        timeString += time[2] + ' h ';
-    
-    if ((time.length > 1) && (time[1] || time[2]) )
-        timeString += time[1] + ' min ';
-
-        timeString += time[0] + ' sec';
-
-    return timeString;
 }
-
 
 function runCountdown() {
     //  Avvia countDown
@@ -225,47 +219,48 @@ function runCountdown() {
     if (timer) return;
 
     console.log("sono nel countdown");
-    toggleControls(true);
+
+    toggleControls(true);   // disattiva controlli
 
     let time = newTime;
+    resetCountdownBar();
 
+    animateCountdownBar(time);
+
+    elCountdown.textContent = timeString(time);
+    
     timer = setInterval(() => {
         if (time === 0) {
             clearInterval(timer);
             elCountdown.textContent = 'Exposure Completed';
+            resetCountdownBar();
+            elCountdownBar.classList.add('bg-green');
             toggleControls(false);
             timer = null;
-        } else
-            elCountdown.textContent = timeString(formatTime(time--));        
-    }, 50);    // debug only (replace with 1000)
+        } else {
+            elCountdown.textContent = timeString(--time);
+        }
+    }, 1000);    // 1s
 }
 
 function stopCountdown() {
     // Interrompe CountDown
+
+    resetCountdownBar();
     toggleControls(false);
 
     if (timer) clearInterval(timer);
     timer = null;
-    elCountdown.textContent = 'Timer Stopper';
+    elCountdown.textContent = 'Timer Stopped';
 }
 
-let fillBar;
-
-fillCountdownBar();
-
-function fillCountdownBar(){
-    
-    let debugTime = 57;    // tempo di prova
-    
-    let actualProgress=0;
-
-    let amountPerSecond = 100 / debugTime;
-
-    
-    fillBar = setInterval(() => {
-        actualProgress += amountPerSecond;
-        elCountdownBar.style.backgroundImage=`linear-gradient(to right , red ${actualProgress}%, gray ${actualProgress}%`;
-    }, 1000);
+function animateCountdownBar(duration){
+    resetCountdownBar();
+    elCountdownBar.style.animationDuration = duration + 's';
+    elCountdownBar.classList.add('fill');
 }
 
-
+function resetCountdownBar(){
+    elCountdownBar.classList.remove('fill' , 'bg-green');
+    elCountdownBar.style.animationDuration = 'unset';
+}

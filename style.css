@@ -71,9 +71,32 @@ select option {
 
     height: 20px;
     width: 100%;
-
+    
+    background-image: linear-gradient(to right , red 50%, gray 50%);;
+    background-size: 200%;
+    background-position: 100%;
 }
 
 .row.countdown-box {
     flex-wrap: wrap;
+}
+
+.countdown-bar.fill {
+    animation-name: fill-bar;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fill-bar {
+    from {
+        background-position: 100%;
+    }
+    
+    to {
+        background-position: 0;
+    }
+}
+
+.bg-green {
+    background-image: linear-gradient(to right, green , lightgreen);
 }

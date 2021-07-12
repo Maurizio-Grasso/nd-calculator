@@ -49,18 +49,19 @@
             <h2 id="new-exposure"> </h2>
         </div>
 
-        <div class="row countdown-box ">
+        <div class="row countdown-box hidden">
             <button class="btn--countdown" onclick="runCountdown()">Start Countdown</button>
             
             <button class="btn--clear-countdown" onclick="stopCountdown()" disabled >Stop Countdown</button>
             
-            <span id="countdown"> </span>
+            
             <button class="btn--reset-all" onclick="resetAll()">Reset All</button>
 
-            <div class="countdown-bar">try</div>
+            <div class="countdown-bar"><span id="countdown"></span></div>
+
+
+
         </div>
-
-
 
     </div>
     <script src="data.js"></script>

@@ -10,11 +10,11 @@ const elNewExp         = document.querySelector('.btn--get-exposure');
 const elResetAll       = document.querySelector('.btn--reset-all');
 
 const elCountdown      = document.getElementById('countdown');
-const elCountdownBox   = document.querySelector('.countdown-box');
+const elCountdownBox   = document.querySelector('.countdown__box');
 const elCountdownAbort = document.querySelector('.btn--clear-countdown');
 const elCountdownRun   = document.querySelector('.btn--countdown');
 
-const elCountdownBar   = document.querySelector('.countdown-bar');
+const elCountdownBar   = document.querySelector('.countdown__bar');
 
 let baseExposureIndex, ndStops, newTime, timer;
 
@@ -234,7 +234,7 @@ function runCountdown() {
             clearInterval(timer);
             elCountdown.textContent = 'Exposure Completed';
             resetCountdownBar();
-            elCountdownBar.classList.add('bg-green');
+            elCountdownBar.classList.add('countdown__bar--complete');
             toggleControls(false);
             timer = null;
         } else {
@@ -257,10 +257,10 @@ function stopCountdown() {
 function animateCountdownBar(duration){
     resetCountdownBar();
     elCountdownBar.style.animationDuration = duration + 's';
-    elCountdownBar.classList.add('fill');
+    elCountdownBar.classList.add('countdown__bar--running');
 }
 
 function resetCountdownBar(){
-    elCountdownBar.classList.remove('fill' , 'bg-green');
+    elCountdownBar.classList.remove('countdown__bar--running' , 'countdown__bar--complete');
     elCountdownBar.style.animationDuration = 'unset';
 }

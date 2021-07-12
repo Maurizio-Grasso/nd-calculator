@@ -5,16 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Online ND Exposure Calculator</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div class="container">
+    <div class="inner-content">
 
-        <div class="row">
+        <div class="row controls">
 
             <div>
-
                 
                 <select  name="exposure-time-initial" id="exposure-time-initial">
                     
@@ -45,11 +45,15 @@
         
         </div>
 
-        <div class="row">
-            <h2 id="new-exposure"> </h2>
+        <div class="row current-query">
+            <h2 class="current-query__old-time">Old Time Here</h2>
+               <span class="current-query__separator">&rarr;</span>
+            <h2 class="current-query__ND">ND Value Here</h2>
+            <span class="current-query__separator">&rarr;</span>
+            <h2 class="current-query__new-time" id="new-exposure"> </h2>
         </div>
 
-        <div class="row countdown-box hidden">
+        <div class="row countdown__box hidden">
             <button class="btn--countdown" onclick="runCountdown()">Start Countdown</button>
             
             <button class="btn--clear-countdown" onclick="stopCountdown()" disabled >Stop Countdown</button>
@@ -57,15 +61,12 @@
             
             <button class="btn--reset-all" onclick="resetAll()">Reset All</button>
 
-            <div class="countdown-bar"><span id="countdown"></span></div>
-
-
-
+            <div class="countdown__bar"><span class="countdown__text" id="countdown"></span></div>
         </div>
 
     </div>
-    <script src="data.js"></script>
-    <script src="main.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
 
 </body>
 </html>

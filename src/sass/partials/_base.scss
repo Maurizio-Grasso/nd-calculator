@@ -1,0 +1,50 @@
+// Variables
+
+$content-width : 124rem;
+
+$font-size-default : 1.8rem;
+
+$border-radius-standard : .5rem;
+
+
+$color-text : rgb(105, 105, 105);
+
+$white: rgb(240, 240, 240);
+$black: rgb(17, 17, 17);
+
+$red : red;
+$green : rgb(0, 121, 0);
+$lightgreen : rgb(0, 231, 0);
+
+$lightgray : rgb(196, 196, 196);
+$gray: gray;
+
+$spacing-tiny       : .5rem;
+$spacing-small      :  1rem;
+$spacing-standard   :  2rem;
+ 
+$spacing-big       :  4rem;
+
+
+:root {
+    font-size: 62.5%;
+}
+
+* ,
+*::after ,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+
+body {
+    box-sizing: border-box;
+}
+
+body {
+    color: $white;
+    background-color: $black;
+    font-size: $font-size-default;
+}

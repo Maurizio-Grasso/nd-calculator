@@ -1,0 +1,89 @@
+:root {
+  font-size: 62.5%;
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+body {
+  box-sizing: border-box;
+}
+
+body {
+  color: #f0f0f0;
+  background-color: #111111;
+  font-size: 1.8rem;
+}
+
+.inner-content {
+  min-height: 100vh;
+  max-width: 124rem;
+  margin: auto;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.countdown__box {
+  flex-wrap: wrap;
+}
+.countdown__bar {
+  flex: 0 0 100%;
+  height: 3rem;
+  line-height: 3rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, red 50%, #c4c4c4 50%);
+  background-size: 200%;
+  background-position: 100%;
+}
+.countdown__bar--running {
+  -webkit-animation-name: fill-bar;
+          animation-name: fill-bar;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+}
+.countdown__bar--complete {
+  background-image: linear-gradient(to right, #007900, #00e700);
+}
+.countdown__text {
+  padding: 2rem;
+}
+
+@-webkit-keyframes fill-bar {
+  from {
+    background-position: 100%;
+  }
+  to {
+    background-position: 0;
+  }
+}
+
+@keyframes fill-bar {
+  from {
+    background-position: 100%;
+  }
+  to {
+    background-position: 0;
+  }
+}
+.hidden {
+  visibility: hidden;
+}

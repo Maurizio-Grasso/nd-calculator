@@ -3,9 +3,11 @@
 $content-width : 124rem;
 
 $font-size-default : 1.8rem;
+$font-size-small : 85%;
 
 $border-radius-standard : .5rem;
 
+$letter-spacing-default : 2px;
 
 $color-text : rgb(105, 105, 105);
 
@@ -25,6 +27,15 @@ $spacing-standard   :  2rem;
  
 $spacing-big       :  4rem;
 
+// Mixins
+
+@mixin standard-typography {
+    font-size: $font-size-default;
+    color: $color-text;
+    letter-spacing: $letter-spacing-default;
+}
+
+// Defaults
 
 :root {
     font-size: 62.5%;
@@ -47,4 +58,27 @@ body {
     color: $white;
     background-color: $black;
     font-size: $font-size-default;
+}
+
+// Media Queries
+
+@mixin resp($breakpoint) {
+
+    @if $breakpoint == phone {
+        @media (max-width: 37.5em) {    // 600px
+            @content
+        };
+    }
+
+    @if $breakpoint == tablet {
+        @media (max-width: 64em) {    // 1024px
+            @content
+        };
+    }
+
+    @if $breakpoint == desktop {
+        @media (max-width: 75em) {    // 1200px
+            @content
+        };
+    }
 }

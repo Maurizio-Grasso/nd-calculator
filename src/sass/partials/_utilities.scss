@@ -1,3 +1,13 @@
 .hidden {
         visibility: hidden;
 }
+
+.hide-on-mobile {
+        @include resp(tablet) {
+                display: none;
+        }
+}
+
+.color-red {
+        color: $red;
+}

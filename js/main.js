@@ -2,10 +2,15 @@
 
 // Elements
 
-const elTimesList      = document.getElementById('exposure-time-initial');
-const elNdFilters      = document.getElementById('nd-intensity');
-const elNewTime        = document.getElementById('new-exposure');
-const elRadioSteps     = document.querySelector('.radio-outer');
+const elTimesList      = document.querySelector('.exposure-time-select');
+const elNdFiltersList  = document.getElementById('nd-intensity');
+
+const elCurrentQuery   = document.querySelector('.current-query');
+const elOldTime        = document.querySelector('.current-query__old-time');
+const elCurrentNd      = document.querySelector('.current-query__ND');
+const elNewTime        = document.querySelector('.current-query__new-time');
+
+const elRadioSteps     = document.querySelector('.radio-select');
 const elNewExp         = document.querySelector('.btn--get-exposure');
 const elResetAll       = document.querySelector('.btn--reset-all');
 
@@ -27,6 +32,7 @@ function resetAll() {
     stopCountdown();
     toggleControls(false);
     hideCountdownBox();
+    elCurrentQuery.classList.add('hidden');
 }
 
 function showCountdownBox(){
@@ -43,7 +49,7 @@ function hideCountdownBox(){
 function toggleControls(bool) {
     
     elTimesList.disabled = bool;
-    elNdFilters.disabled = bool;
+    elNdFiltersList.disabled = bool;
     elNewExp.disabled    = bool;
     elCountdownRun.disabled = bool;
     elCountdownAbort.disabled = bool ? false : true;
@@ -87,10 +93,7 @@ function printRadioValues() {
 
         if (i == 0) continue;   // salta elemento 0 (show all utile solo per debug)
 
-        elRadioSteps.innerHTML += `<div>`;
-        elRadioSteps.innerHTML += `<input onchange="printTimes()" id="steps-${i}" type="radio" name="steps" value="${i}">`;
-        elRadioSteps.innerHTML += `<label for="steps-${i}">${stepsAll[i]}</label>`;        
-        elRadioSteps.innerHTML += `</div>`;
+        elRadioSteps.innerHTML += `<div class="radio-select__option"><input class="radio-select__input" onchange="printTimes()" id="steps-${i}" type="radio" name="steps" value="${i}"><label class="radio-select__label" for="steps-${i}">${stepsAll[i]} </label></div>`;
         
     }
 
@@ -110,7 +113,8 @@ function printTimes(){
         else elTimesList.innerHTML += `<option value="${i}">${exposureTimesAll[i].label}</option>`;
     }
 
-    if(!baseExposureIndex) baseExposureIndex = -1; // default
+    baseExposureIndex = baseExposureIndex ?? -1;
+    // if(!baseExposureIndex) baseExposureIndex = -1; // default
 
     elTimesList.value = baseExposureIndex;  // preserva eventuale valore precedentemente selezionato dopo la ristampa dei tempi
     
@@ -119,39 +123,63 @@ function printTimes(){
 function printNds(){
     // Stampa nella relativa select tutti i filtri ND supportati dall'applicazione
 
-    elNdFilters.innerHTML = `<option value="-1"></option> `;
+    elNdFiltersList.innerHTML = `<option value="-1"></option> `;
 
     ndFiltersAlll.forEach((element , index) => {
-        elNdFilters.innerHTML += `<option value="${index}">${element.label}</option> `;
+        elNdFiltersList.innerHTML += `<option value="${index}">${element.label}</option> `;
     });
 
     ndStops = -1;   // default
 
 }
 
+function readExposurTime(){
+    baseExposureIndex = Number(elTimesList.value);
+    console.log(baseExposureIndex); 
+}
+
+function readNdFilter(){
+    
+    if (elNdFiltersList.value == -1) {
+        elNdFiltersList.style.border = '1px solid red';
+        return;
+    }
+
+    elNdFiltersList.style.border = 'none';
+    ndStops = Number(ndFiltersAlll[elNdFiltersList.value].value);
+
+    console.log(ndStops);
+}
+
 function getNewExposure() {
     //  Calcola il nuovo tempo di posa
 
     // Eccezione: parametri necessari non selezionati
-    if(Number(elTimesList.value) === -1 || Number(elNdFilters.value) === -1){
+    if(!Number(elTimesList.value) > 0 || Number(elNdFiltersList.value) === -1){
         elNewTime.textContent = "Please, select both base Exposure Time and ND Filter"
         return;
     }
 
-    // Eccezione:  parametri non modificati rispetto al calcolo precedente
-    if( baseExposureIndex === Number(elTimesList.value) &&  ndStops === Number(ndFiltersAlll[elNdFilters.value].value) ) {
-        console.log("Stai cercando di eseguire la stessa ricerca. Non proseguirò");
-        showCountdownBox(); // Mostra comunque pannello countdown
+    elCurrentQuery.classList.remove('hidden');
 
-        return;
-    }
+    // Eccezione:  parametri non modificati rispetto al calcolo precedente
+    // if( baseExposureIndex === Number(elTimesList.value) &&  ndStops === Number(ndFiltersAlll[elNdFiltersList.value].value) ) {
+    //     console.log("Stai cercando di eseguire la stessa ricerca. Non proseguirò");
+    //     showCountdownBox(); // Mostra comunque pannello countdown
         
+    //     // return;
+    // }
+
     hideCountdownBox();
+        
 
     console.log("Sto Calcolando nuovo tempo di posa");
 
-    baseExposureIndex = parseInt(elTimesList.value);
-    ndStops = parseInt(ndFiltersAlll[elNdFilters.value].value);
+    elOldTime.textContent = exposureTimesAll[elTimesList.value].label;
+    elCurrentNd.textContent = 'ND ' + ndFiltersAlll[elNdFiltersList.value].value + ' Stop';
+
+    // baseExposureIndex = Number(elTimesList.value);
+    // ndStops = Number(ndFiltersAlll[elNdFiltersList.value].value);
 
 
     let indexOffset = ndStops * 4;  // Posizioni (dell'array) che separano il tempo iniziale da quello risultante

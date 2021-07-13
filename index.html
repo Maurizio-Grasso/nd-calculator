@@ -14,57 +14,104 @@
 
         <div class="row controls">
 
-            <div>
+            <div class="row__item row__item--half-on-mobile">
+
+                <h3 class="row__heading">
+                    Base Exp Time
+                </h3>
                 
-                <select  name="exposure-time-initial" id="exposure-time-initial">
+                <select onchange="readExposurTime()" class="exposure-time-select">
                     
                     <!-- Base Exposure Time 
                         Populated by JS    -->
                         
                 </select>
 
-                <div class="radio-outer">
+            </div>
+
+            
+            <div class="row__item row__item--half-on-mobile">
+                
+                <h3 class="row__heading">
+                    ND Intensity
+                </h3>
+
+                <select onchange="readNdFilter()" name="nd-intensity" id="nd-intensity">
+
+                        <!-- ND Filters List 
+                        Populated by JS    -->
+
+                </select>
+
+            </div>
+
+            <div class="row__item row__item--full radio-select">
 
                 <!-- 
                     Steps select
                     Populated by JS
                     -->
 
-                </div>
-
             </div>
 
-            <select name="nd-intensity" id="nd-intensity">
+            <div class="row__item row__item--full-on-mobile">
 
-                    <!-- ND Filters List 
-                    Populated by JS    -->
-
-            </select>
-
-            <button class="btn--get-exposure" onclick="getNewExposure()">Calcola</button>
+                <button class="btn btn--get-exposure" onclick="getNewExposure()">Calcola</button>
         
-        </div>
+            </div>
 
-        <div class="row current-query">
-            <h2 class="current-query__old-time">Old Time Here</h2>
-               <span class="current-query__separator">&rarr;</span>
-            <h2 class="current-query__ND">ND Value Here</h2>
-            <span class="current-query__separator">&rarr;</span>
-            <h2 class="current-query__new-time" id="new-exposure"> </h2>
-        </div>
+        </div><!-- Row -->
+
+        <div class="row current-query hidden">
+
+            <div class="row__item">
+                <h2 class="current-query__old-time"></h2>
+            </div>
+
+            <div class="row__item">
+                <span class="current-query__separator"></span>
+            </div>
+
+            <div class="row__item">
+                <h2 class="current-query__ND"></h2>
+            </div>
+
+            <div class="row__item">
+                <span class="current-query__separator"></span>
+            </div>
+
+            <div class="row__item">
+                <h2 class="current-query__new-time"> </h2>
+            </div>
+
+        </div><!-- Row -->
 
         <div class="row countdown__box hidden">
-            <button class="btn--countdown" onclick="runCountdown()">Start Countdown</button>
-            
-            <button class="btn--clear-countdown" onclick="stopCountdown()" disabled >Stop Countdown</button>
-            
-            
-            <button class="btn--reset-all" onclick="resetAll()">Reset All</button>
 
-            <div class="countdown__bar"><span class="countdown__text" id="countdown"></span></div>
-        </div>
+            <div class="row__item">
+                <button class="btn btn--countdown" onclick="runCountdown()">Start Timer</button>
+            </div>
 
+            <div class="row__item">
+                <button class="btn btn--clear-countdown" onclick="stopCountdown()" disabled >Stop Timer</button>
+            </div>
+            
+            <div class="row__item">
+                <button class="btn btn--reset-all" onclick="resetAll()">Reset</button>
+            </div>
+
+            <div class="row__item row__item--full">
+                <div class="countdown__bar"><span class="countdown__text" id="countdown"></span></div>
+            </div>
+
+        </div> <!-- Row -->
+
+    </div><!-- Inner Content -->
+
+    <div class="error-message ">
+            <h2 class="error-message__text color-red">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dignissimos vel illo aliquid numquam, sunt nihil nulla neque repellendus delectus accusamus sit expedita, cum, excepturi voluptatem nam. Quia sequi itaque labore!</h2>
     </div>
+
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
 

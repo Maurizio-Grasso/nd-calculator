@@ -14,13 +14,13 @@
 
         <div class="row controls">
 
-            <div class="row__item row__item--half-on-mobile">
+            <div class="row__item row__item--half-on-mobile set-time">
 
-                <h3 class="row__heading">
+                <h3 class="row__heading set-time__heading">
                     Base Exp Time
                 </h3>
                 
-                <select onchange="readExposurTime()" class="exposure-time-select">
+                <select class="set-time__select" onchange="readExposurTime()">
                     
                     <!-- Base Exposure Time 
                         Populated by JS    -->
@@ -30,13 +30,13 @@
             </div>
 
             
-            <div class="row__item row__item--half-on-mobile">
+            <div class="row__item row__item--half-on-mobile set-nd">
                 
-                <h3 class="row__heading">
-                    ND Intensity
+                <h3 class="row__heading set-nd__heading">
+                    ND Intensity    
                 </h3>
 
-                <select onchange="readNdFilter()" name="nd-intensity" id="nd-intensity">
+                <select class="set-nd__select" onchange="readNdFilter()">
 
                         <!-- ND Filters List 
                         Populated by JS    -->
@@ -101,15 +101,15 @@
             </div>
 
             <div class="row__item row__item--full">
-                <div class="countdown__bar"><span class="countdown__text" id="countdown"></span></div>
+                <div class="countdown__bar"><span class="countdown__text"></span></div>
             </div>
 
         </div> <!-- Row -->
 
     </div><!-- Inner Content -->
 
-    <div class="error-message ">
-            <h2 class="error-message__text color-red">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dignissimos vel illo aliquid numquam, sunt nihil nulla neque repellendus delectus accusamus sit expedita, cum, excepturi voluptatem nam. Quia sequi itaque labore!</h2>
+    <div class="error-message hidden">
+            <p class="error-message__text color-red">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dignissimos vel illo aliquid numquam, sunt nihil nulla neque repellendus delectus accusamus sit expedita, cum, excepturi voluptatem nam. Quia sequi itaque labore!</p>
     </div>
 
     <script src="js/data.js"></script>

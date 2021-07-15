@@ -2,24 +2,42 @@
 
 // Elements
 
-const elTimesList      = document.querySelector('.exposure-time-select');
-const elNdFiltersList  = document.getElementById('nd-intensity');
+const elTimesList = {
+    box     : document.querySelector('.set-time'),
+    heading : document.querySelector('.set-time__heading'),
+    select  : document.querySelector('.set-time__select')
+}
 
-const elCurrentQuery   = document.querySelector('.current-query');
-const elOldTime        = document.querySelector('.current-query__old-time');
-const elCurrentNd      = document.querySelector('.current-query__ND');
-const elNewTime        = document.querySelector('.current-query__new-time');
+const elNdList  = {
+    box     : document.querySelector('.set-nd'),
+    heading : document.querySelector('.set-nd__heading'),
+    select  : document.querySelector('.set-nd__select'),
+}
+
+const elQuery       = {
+    box     : document.querySelector('.current-query') ,
+    nd      : document.querySelector('.current-query__ND'),
+    oldTime : document.querySelector('.current-query__old-time'),
+    newTime : document.querySelector('.current-query__new-time') ,
+}
+
+const elCountdown = {
+    box   : document.querySelector('.countdown__box') ,
+    text  : document.querySelector('.countdown__text'),
+    abort : document.querySelector('.btn--clear-countdown'),
+    run   : document.querySelector('.btn--countdown'),
+    bar   : document.querySelector('.countdown__bar'),
+}
 
 const elRadioSteps     = document.querySelector('.radio-select');
+
 const elNewExp         = document.querySelector('.btn--get-exposure');
 const elResetAll       = document.querySelector('.btn--reset-all');
 
-const elCountdown      = document.getElementById('countdown');
-const elCountdownBox   = document.querySelector('.countdown__box');
-const elCountdownAbort = document.querySelector('.btn--clear-countdown');
-const elCountdownRun   = document.querySelector('.btn--countdown');
-
-const elCountdownBar   = document.querySelector('.countdown__bar');
+const elError = {
+    box : document.querySelector('.error-message'),
+    message : document.querySelector('.error-message__text'),
+}
 
 let baseExposureIndex, ndStops, newTime, timer;
 
@@ -32,27 +50,27 @@ function resetAll() {
     stopCountdown();
     toggleControls(false);
     hideCountdownBox();
-    elCurrentQuery.classList.add('hidden');
+    elQuery.box.classList.add('hidden');
 }
 
 function showCountdownBox(){
     if (newTime < 5) return;
-    elCountdownBox.classList.remove('hidden');
-    elCountdown.textContent = '';
+    elCountdown.box.classList.remove('hidden');
+    elCountdown.text.textContent = '';
 }
 
 function hideCountdownBox(){
     resetCountdownBar();
-    elCountdownBox.classList.add('hidden');
+    elCountdown.box.classList.add('hidden');
 }
 
 function toggleControls(bool) {
     
-    elTimesList.disabled = bool;
-    elNdFiltersList.disabled = bool;
+    elTimesList.select.disabled = bool;
+    elNdList.select.disabled = bool;
     elNewExp.disabled    = bool;
-    elCountdownRun.disabled = bool;
-    elCountdownAbort.disabled = bool ? false : true;
+    elCountdown.run.disabled = bool;
+    elCountdown.abort.disabled = bool ? false : true;
 
     const radioStepsAll = document.querySelectorAll('input[name=steps]');
 
@@ -86,7 +104,6 @@ function setSteps() {
 }
 
 function printRadioValues() {
-    console.log(baseExposureIndex);
     elRadioSteps.innerHTML = '';
 
     for (let i = 0; i < stepsAll.length ; i++) {
@@ -97,36 +114,35 @@ function printRadioValues() {
         
     }
 
-        document.getElementById('steps-1').checked = true;  // di default viene selezionata opzione 1 (full stops)
+    document.getElementById('steps-1').checked = true;  // di default viene selezionata opzione 1 (full stops)
     
 }
 
 function printTimes(){    
     // Inserisce nella relativa select i tempi di posa che sarà possibile selezionare
     
-    elTimesList.innerHTML = `<option value="-1"></option>`;
+    elTimesList.select.innerHTML = `<option value="-1"></option>`;
 
     let skip = setSteps();
 
     for(let i = 0; i < exposureTimesAll.length; i++){
         if(skip(i)) continue
-        else elTimesList.innerHTML += `<option value="${i}">${exposureTimesAll[i].label}</option>`;
+        else elTimesList.select.innerHTML += `<option value="${i}">${exposureTimesAll[i].label}</option>`;
     }
 
     baseExposureIndex = baseExposureIndex ?? -1;
-    // if(!baseExposureIndex) baseExposureIndex = -1; // default
 
-    elTimesList.value = baseExposureIndex;  // preserva eventuale valore precedentemente selezionato dopo la ristampa dei tempi
+    elTimesList.select.value = baseExposureIndex;  // riseleziona eventuale valore precedentemente selezionato dopo la ristampa dei tempi
     
 }
 
 function printNds(){
     // Stampa nella relativa select tutti i filtri ND supportati dall'applicazione
 
-    elNdFiltersList.innerHTML = `<option value="-1"></option> `;
+    elNdList.select.innerHTML = `<option value="-1"></option> `;
 
     ndFiltersAlll.forEach((element , index) => {
-        elNdFiltersList.innerHTML += `<option value="${index}">${element.label}</option> `;
+        elNdList.select.innerHTML += `<option value="${index}">${element.label}</option> `;
     });
 
     ndStops = -1;   // default
@@ -134,52 +150,60 @@ function printNds(){
 }
 
 function readExposurTime(){
-    baseExposureIndex = Number(elTimesList.value);
+    baseExposureIndex = Number(elTimesList.select.value);
+    baseExposureIndex === -1 ? elTimesList.heading.classList.add('color-red') : elTimesList.heading.classList.remove('color-red');
     console.log(baseExposureIndex); 
 }
 
 function readNdFilter(){
-    
-    if (elNdFiltersList.value == -1) {
-        elNdFiltersList.style.border = '1px solid red';
-        return;
-    }
-
-    elNdFiltersList.style.border = 'none';
-    ndStops = Number(ndFiltersAlll[elNdFiltersList.value].value);
-
+    ndStops = (ndFiltersAlll[Number(elNdList.select.value)]?.value) ?? -1;
+    ndStops === -1 ? elNdList.heading.classList.add('color-red') : elNdList.heading.classList.remove('color-red');
     console.log(ndStops);
 }
 
+function showError(message){
+    elError.message.textContent = message;
+    elError.box.classList.remove('hidden');
+}
+
+function clearError() {
+    elError.message.textContent = '';
+    elError.box.classList.add('hidden');
+}
+
 function getNewExposure() {
-    //  Calcola il nuovo tempo di posa
+    //  Calcola nuovo tempo di posa
+
+    elQuery.box.classList.add('hidden');
 
     // Eccezione: parametri necessari non selezionati
-    if(!Number(elTimesList.value) > 0 || Number(elNdFiltersList.value) === -1){
-        elNewTime.textContent = "Please, select both base Exposure Time and ND Filter"
+    
+    if(baseExposureIndex === -1 || ndStops === -1){
+
+        if (baseExposureIndex !== -1) {
+            showError("Please, select ND Filter");
+            return;
+        }
+
+        if (ndStops !== -1) {
+            showError("Please, select base Exposure Time");
+            return;
+        }
+
+        showError("Please, select both base Exposure Time and ND Filter");
         return;
+
     }
 
-    elCurrentQuery.classList.remove('hidden');
-
-    // Eccezione:  parametri non modificati rispetto al calcolo precedente
-    // if( baseExposureIndex === Number(elTimesList.value) &&  ndStops === Number(ndFiltersAlll[elNdFiltersList.value].value) ) {
-    //     console.log("Stai cercando di eseguire la stessa ricerca. Non proseguirò");
-    //     showCountdownBox(); // Mostra comunque pannello countdown
-        
-    //     // return;
-    // }
+    clearError();
+    elQuery.box.classList.remove('hidden');
 
     hideCountdownBox();
         
+    console.log("Sto Calcolando nuovo tempo di posa\n" + elTimesList.select.value);
 
-    console.log("Sto Calcolando nuovo tempo di posa");
-
-    elOldTime.textContent = exposureTimesAll[elTimesList.value].label;
-    elCurrentNd.textContent = 'ND ' + ndFiltersAlll[elNdFiltersList.value].value + ' Stop';
-
-    // baseExposureIndex = Number(elTimesList.value);
-    // ndStops = Number(ndFiltersAlll[elNdFiltersList.value].value);
+    elQuery.oldTime.textContent = exposureTimesAll[elTimesList.select.value].label;
+    elQuery.nd.textContent = 'ND ' + ndFiltersAlll[elNdList.select.value].value + ' Stop';
 
 
     let indexOffset = ndStops * 4;  // Posizioni (dell'array) che separano il tempo iniziale da quello risultante
@@ -189,7 +213,7 @@ function getNewExposure() {
     
     if( baseExposureIndex + indexOffset <= exposureTimesAll.length - 1 ) {
 
-        elNewTime.textContent = exposureTimesAll[baseExposureIndex + indexOffset].label;
+        elQuery.newTime.textContent = exposureTimesAll[baseExposureIndex + indexOffset].label;
         newTime = exposureTimesAll[baseExposureIndex + indexOffset].value;
 
     }
@@ -205,7 +229,7 @@ function getNewExposure() {
 
         newTime = Math.ceil(newTime);   // arrotonda
 
-        elNewTime.innerHTML = timeString(newTime);
+        elQuery.newTime.innerHTML = timeString(newTime);
     }
 
     showCountdownBox();
@@ -255,18 +279,18 @@ function runCountdown() {
 
     animateCountdownBar(time);
 
-    elCountdown.textContent = timeString(time);
+    elCountdown.text.textContent = timeString(time);
     
     timer = setInterval(() => {
         if (time === 0) {
             clearInterval(timer);
-            elCountdown.textContent = 'Exposure Completed';
+            elCountdown.text.textContent = 'Exposure Completed';
             resetCountdownBar();
-            elCountdownBar.classList.add('countdown__bar--complete');
+            elCountdown.bar.classList.add('countdown__bar--complete');
             toggleControls(false);
             timer = null;
         } else {
-            elCountdown.textContent = timeString(--time);
+            elCountdown.text.textContent = timeString(--time);
         }
     }, 1000);    // 1s
 }
@@ -279,16 +303,16 @@ function stopCountdown() {
 
     if (timer) clearInterval(timer);
     timer = null;
-    elCountdown.textContent = 'Timer Stopped';
+    elCountdown.text.textContent = 'Timer Stopped';
 }
 
 function animateCountdownBar(duration){
     resetCountdownBar();
-    elCountdownBar.style.animationDuration = duration + 's';
-    elCountdownBar.classList.add('countdown__bar--running');
+    elCountdown.bar.style.animationDuration = duration + 's';
+    elCountdown.bar.classList.add('countdown__bar--running');
 }
 
 function resetCountdownBar(){
-    elCountdownBar.classList.remove('countdown__bar--running' , 'countdown__bar--complete');
-    elCountdownBar.style.animationDuration = 'unset';
+    elCountdown.bar.classList.remove('countdown__bar--running' , 'countdown__bar--complete');
+    elCountdown.bar.style.animationDuration = 'unset';
 }

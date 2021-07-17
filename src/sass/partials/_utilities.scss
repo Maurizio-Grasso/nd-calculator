@@ -11,3 +11,18 @@
 .color-red {
         color: $red;
 }
+
+.overlay-skew {
+        background-color: rgba($black , .4);
+        border-radius: $border-radius-standard;
+        padding: $spacing-standard $spacing-big;
+        transform: skewX(-15deg);
+
+        > * {
+            transform: skewX(15deg);
+        }
+}
+
+.overlay-solid {
+        background-color: rgba($bg-color , .75);
+}

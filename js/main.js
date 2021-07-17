@@ -2,8 +2,6 @@
 
 // Elements
 
-const elControls  = document.querySelector('.controls');
-
 const elTimesList = {
     box     : document.querySelector('.set-time'),
     heading : document.querySelector('.set-time__heading'),
@@ -18,7 +16,7 @@ const elNdList  = {
 
 const elQuery       = {
     box     : document.querySelector('.current-query') ,
-    bgImg : document.querySelector('.current-query__bg-image'),
+    bgImg   : document.querySelector('.current-query__bg-image'),
     nd      : document.querySelector('.current-query__ND'),
     oldTime : document.querySelector('.current-query__old-time'),
     newTime : document.querySelector('.current-query__new-time'),
@@ -32,19 +30,17 @@ const elCountdown = {
     bar   : document.querySelector('.countdown__bar'),
 }
 
-const elBodyBg = document.querySelector('.background');
-
-const elRadioSteps     = document.querySelector('.radio-select');
-
-const elNewExp         = document.querySelector('.btn--get-exposure');
-const elResetAll       = document.querySelector('.btn--reset-all');
-
-// const elQuery.bgImg            = document.querySelector('.current-query__bg-image');
-
 const elError = {
-    box : document.querySelector('.error-message'),
+    box     : document.querySelector('.error-message'),
     message : document.querySelector('.error-message__text'),
 }
+
+const elControls  = document.querySelector('.controls');
+const elMainBg      = document.querySelector('.background');
+const elRadioSteps  = document.querySelector('.radio-select');
+const elNewExp      = document.querySelector('.btn--get-exposure');
+const elResetAll    = document.querySelector('.btn--reset-all');
+
 
 let baseExposureIndex, ndStops, newTime, timer;
 
@@ -84,6 +80,7 @@ function toggleControls(bool) {
     radioStepsAll.forEach(el => {
         el.disabled = bool;
     });
+
 }
 
 function setSteps() {
@@ -184,7 +181,6 @@ function getNewExposure() {
     elQuery.box.classList.add('hidden');
 
     hideCountdownBox();
-    // resetBackgrounds();
 
     // Eccezione: parametri necessari non selezionati
     
@@ -207,7 +203,6 @@ function getNewExposure() {
 
     clearError();
     elQuery.box.classList.remove('hidden');
-
         
     console.log("Sto Calcolando nuovo tempo di posa\n" + elTimesList.select.value);
 
@@ -282,24 +277,21 @@ function runCountdown() {
     
     console.log("sono nel countdown");
     
-    toggleControls(true);   // disattiva controlli
-    
-    let time = newTime;
-    
-    resetCountdownBar();
-
-    
+    toggleControls(true);
+    resetCountdownBar();    
     resetBackgrounds();
     
     window.setTimeout(function() {        
         animateCountdownBar(time);
         animateBackgrounds(time);
-      }, 100); 
+    }, 100); 
 
+    let time = newTime;
+    
     elCountdown.text.textContent = timeString(time);
     
     timer = setInterval(() => {
-        if (time === 0) {
+        if (time === 1) {
             clearInterval(timer);
             elCountdown.text.textContent = 'Exposure Completed';            
             resetCountdownBar();
@@ -326,34 +318,24 @@ function stopCountdown() {
 
 function animateBackgrounds(duration){
 
-    // resetBackgrounds(); //try
-
-    // elQuery.bgImg.style.transitionDuration = duration + 's';
-
-    elQuery.bgImg.style.animationDuration = duration + 's';     // just a try
-
-    // elQuery.bgImg.classList.remove('current-query__bg-image--invisible');
-
+    elQuery.bgImg.style.animationDuration = duration + 's';
+    elMainBg.style.animationDuration = duration + 's';     // just a try
     elQuery.bgImg.classList.add('current-query__bg-image--running');
+    elMainBg.classList.add('background--running');
+    
 
 }
 
 function resetBackgrounds(){
 
-    // elQuery.bgImg.style.transitionDuration = '0s';
-
-    // elQuery.bgImg.style.animationDuration = '0s';       // just a try
-    
-    
     elQuery.bgImg.classList.remove('current-query__bg-image--running');
-    elQuery.bgImg.style.animationDuration = 'unset';    // just a try
-    // elQuery.bgImg.classList.add('current-query__bg-image--invisible');
+    elMainBg.classList.remove('background--running');
+    elQuery.bgImg.style.animationDuration = 'unset';
+    elMainBg.style.animationDuration = 'unset';
 
 }
 
 function animateCountdownBar(duration){
-
-    // resetCountdownBar();
 
     elCountdown.bar.style.animationDuration = duration + 's';
     elCountdown.bar.classList.add('countdown__bar--running');

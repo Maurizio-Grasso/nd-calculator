@@ -1,3 +1,18 @@
+$bg-color : blue;
+
+.background {
+
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    z-index: -200;
+    background-color: $bg-color;
+    opacity: .5;
+
+}
+
 .inner-content  {
     min-height: 100vh;    
     max-width : $content-width;
@@ -22,6 +37,8 @@
     justify-content: space-between;
     flex-wrap: wrap;
     align-items: flex-end;
+
+    padding: $spacing-small;
 
     &__heading {
         margin-bottom: $spacing-small;

@@ -181,6 +181,8 @@ function getNewExposure() {
     elQuery.box.classList.add('hidden');
 
     hideCountdownBox();
+    resetBackgrounds();
+
 
     // Eccezione: parametri necessari non selezionati
     
